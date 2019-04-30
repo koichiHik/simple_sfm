@@ -38,6 +38,18 @@ const Value& getMapValue(const std::map<Key, Value>& map, Key key) {
   return itr->second;
 }
 
+struct CamIntrinsics {
+  cv::Matx33d K;
+  cv::Matx33d Kinv;
+  cv::Mat_<double> distortion_coeff;
+};
+
+struct CloudPoint {
+  cv::Point3d pt;
+  std::vector<size_t> existence_in_img;
+  double reprojection_err;
+};
+
 }
 }
 

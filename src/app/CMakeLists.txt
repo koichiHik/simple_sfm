@@ -12,6 +12,7 @@ target_link_libraries(simple_sfm
   feature_extractor
   descriptor_matcher
   key_point_filter
+  geometry
   ${OpenCV_LIBS}
   ${Boost_LIBRARIES}
 )

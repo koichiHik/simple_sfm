@@ -17,11 +17,14 @@
 
 // Original
 #include <common/container.h>
+#include <common/container_util.h>
+#include <common/math.h>
 #include <utility/fileutil.h>
 #include <utility/vis2dutil.h>
 #include <feature_extractor/IFeatureExtractorFactory.h>
 #include <descriptor_matcher/IDescriptorMatcherFactory.h>
 #include <key_point_filter/IKeyPointFilterFactory.h>
+#include <geometry/Geometry.h>
 
 // Original namespace
 using namespace simple_sfm;
@@ -30,6 +33,7 @@ using namespace simple_sfm::utility;
 using namespace simple_sfm::feature_extractor;
 using namespace simple_sfm::descriptor_matcher;
 using namespace simple_sfm::key_point_filter;
+using namespace simple_sfm::geometry;
 
 struct ActivationConfig {
   std::string img_dir;
@@ -207,27 +211,29 @@ int main(int argc, char** argv) {
 
   // 13. Start baseline calculation.
   {
+    cv::Matx34d P, Porigin;
+    common::vec1d<cv::Point3f> point3d;
+    common::CamIntrinsics cam_intr;
     using sorted_pair = vec1d<std::pair<int, std::pair<size_t, size_t> > >;
     cv::Ptr<IKeyPointFilter> fmat_point_filter
         = IKeyPointFilterFactory::createKeyPointFilter(FilterType::F_MAT);
-    cv::Mat F;
     for (sorted_pair::const_iterator citr = sorted_match_list.cbegin();
          citr != sorted_match_list.cend();
          citr++) {
       size_t query_idx = citr->second.first;
       size_t train_idx = citr->second.second;
-      const vec1d<cv::DMatch>& original_match = 
-            match_result.f_ref_matrix[std::make_pair(query_idx, train_idx)];
-      vec1d<cv::DMatch> new_match;
-      fmat_point_filter->filterKeyPoint(
-                    features.key_points[query_idx],
-                    features.key_points[train_idx],
-                    original_match,
-                    new_match,
-                    F);
+      common::vec1d<cv::DMatch> matches = match_result.f_ref_matrix[citr->second];
+      common::vec1d<cv::Point2f> aligned_point2f_list1, aligned_point2f_list2;
+      common::container_util::create_point2f_list_aligned_with_matches(
+        matches, 
+        features.key_points[query_idx], features.key_points[train_idx],
+        aligned_point2f_list1, aligned_point2f_list2);
 
-      std::cout << std::endl << "Original Match : " << original_match.size() << std::endl;
-      std::cout << "New Match : " << new_match.size() << std::endl;
+      geometry::find_camera_matrix(
+        cam_intr, 
+        aligned_point2f_list1, 
+        aligned_point2f_list2,
+        Porigin, P, point3d);
     }
   }
 
