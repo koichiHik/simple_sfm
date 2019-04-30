@@ -10,40 +10,46 @@
 #include <opencv2/nonfree/gpu.hpp>
 
 // Original
-#include <feature/ConcreteFeatureCalculator.h>
+#include <feature_extractor/ConcreteFeatureExtractor.h>
 
 namespace simple_sfm {
-namespace feature {
+namespace feature_extractor {
 
-struct GPUSurfFeatureCalculatorInternalStorage {
+struct GPUSurfFeatureExtractorInternalStorage {
   cv::gpu::SURF_GPU m_extractor;
   //std::vector<cv::gpu::GpuMat> m_gpu_imgs;
   //std::vector<cv::gpu::GpuMat> m_gpu_descriptors;
 };
 
-GPUSurfFeatureCalculator::GPUSurfFeatureCalculator() {
-  m_intl.reset(new GPUSurfFeatureCalculatorInternalStorage());
-}
-
-GPUSurfFeatureCalculator::~GPUSurfFeatureCalculator() 
+GPUSurfFeatureExtractor::GPUSurfFeatureExtractor() :
+  m_intl(new GPUSurfFeatureExtractorInternalStorage())
 {}
 
-void GPUSurfFeatureCalculator::detectAndComputeForSingleImg (
+GPUSurfFeatureExtractor::~GPUSurfFeatureExtractor() 
+{}
+
+void GPUSurfFeatureExtractor::detectAndCompute(
           const cv::Mat& image,
           vec1d<cv::KeyPoint>& key_points,
           cv::Mat& descriptors
           ) {
 
+    std::cout << "Feature Extraction for Single Image" << std::endl;
+    cv::gpu::GpuMat g_img;
+    cv::gpu::GpuMat g_descriptor;
+    g_img.upload(image);
+    m_intl->m_extractor(g_img, cv::gpu::GpuMat(), key_points, g_descriptor);
+    g_descriptor.download(descriptors);
 
 }
 
-void GPUSurfFeatureCalculator::detectAndComputeForMultipleImgs (
+void GPUSurfFeatureExtractor::detectAndCompute(
           const vec1d<cv::Mat>& images,
           vec2d<cv::KeyPoint>& key_points,
           vec1d<cv::Mat>& descriptors
           ) {
 
-  std::cout << "GPUSurfFeatureCalculator::detectAndComputeForMultipleImgs" << std::endl;
+  std::cout << "GPUSurfFeatureExtractor::detectAndComputeForMultipleImgs" << std::endl;
 
   // Initialize and resize
   key_points.clear();

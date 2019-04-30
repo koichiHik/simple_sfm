@@ -9,7 +9,9 @@ add_executable(simple_sfm
 
 target_link_libraries(simple_sfm
   utility
-  feature
+  feature_extractor
+  descriptor_matcher
+  key_point_filter
   ${OpenCV_LIBS}
   ${Boost_LIBRARIES}
 )

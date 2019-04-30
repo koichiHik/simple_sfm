@@ -16,5 +16,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 # Include Directories
 add_subdirectory(src/common)
 add_subdirectory(src/utility)
-add_subdirectory(src/feature)
+add_subdirectory(src/feature_extractor)
+add_subdirectory(src/descriptor_matcher)
+add_subdirectory(src/key_point_filter)
 add_subdirectory(src/app)

@@ -1,6 +1,7 @@
 
-#ifndef I_FEATURE_CALCULATOR_H
-#define I_FEATURE_CALCULATOR_H
+
+#ifndef I_FEATURE_EXTRACTOR_H
+#define I_FEATURE_EXTRACTOR_H
 
 // OpenCV
 #include <opencv2/features2d.hpp>
@@ -9,9 +10,9 @@
 #include <common/container.h>
 
 namespace simple_sfm {
-namespace feature {
+namespace feature_extractor {
 
-class IFeatureCalculator {
+class IFeatureExtractor {
 public:
 
   template <typename Value>
@@ -20,19 +21,19 @@ public:
   template <typename Value>
   using vec2d = simple_sfm::common::vec2d<Value>;
 
-  IFeatureCalculator()
+  IFeatureExtractor()
   {}
 
-  virtual ~IFeatureCalculator()
+  virtual ~IFeatureExtractor()
   {}
 
-  virtual void detectAndComputeForSingleImg(
+  virtual void detectAndCompute(
           const cv::Mat& image,
           vec1d<cv::KeyPoint>& key_points,
           cv::Mat& descriptors
           ) = 0;
 
-  virtual void detectAndComputeForMultipleImgs(
+  virtual void detectAndCompute(
           const vec1d<cv::Mat>& images,
           vec2d<cv::KeyPoint>& key_points,
           vec1d<cv::Mat>& descriptors
