@@ -33,8 +33,8 @@ void GPUBruteForceMatcher::createMatchingMatrix(
       match(descriptor_list[query_idx],
             descriptor_list[train_idx],
             raw_match);
-      match_matrix[std::make_pair(query_idx, train_idx)] = valid_match;
-      match_matrix[std::make_pair(train_idx, query_idx)] = flipMatches(valid_match); 
+      match_matrix[std::make_pair(train_idx, query_idx)] = valid_match;
+      match_matrix[std::make_pair(query_idx, train_idx)] = flipMatches(valid_match); 
     }
   }
 } 
@@ -55,6 +55,8 @@ void GPUBruteForceMatcher::match(
         gpu_train_descriptor,
         matches[0]);
 
+  // This is necessary to keep same result.
+  std::sort(matches.begin(), matches.end());
 }
 
 }

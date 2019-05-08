@@ -17,19 +17,27 @@ void convert_key_point_list_to_point2f_list(
       const common::vec1d<cv::KeyPoint>& key_point_list,
       common::vec1d<cv::Point2f>& point2f_list);
 
+void convert_cloud_point_list_to_point3f_list(
+      const common::vec1d<common::CloudPoint>& cloud_point_list,
+      common::vec1d<cv::Point3f>& point3f_list);
+
+void convert_cloud_point_list_to_point3d_list(
+      const common::vec1d<common::CloudPoint>& cloud_point_list,
+      common::vec1d<cv::Point3d>& point3d_list);
+
 void create_key_point_list_aligned_with_matches(
       const common::vec1d<cv::DMatch>& matches,
-      const common::vec1d<cv::KeyPoint>& key_point_list1,
-      const common::vec1d<cv::KeyPoint>& key_point_list2,
-      common::vec1d<cv::KeyPoint>& aligned_key_point_list1,
-      common::vec1d<cv::KeyPoint>& aligned_key_point_list2);
+      const common::vec1d<cv::KeyPoint>& key_point_list_train,
+      const common::vec1d<cv::KeyPoint>& key_point_list_query,
+      common::vec1d<cv::KeyPoint>& aligned_key_point_list_train,
+      common::vec1d<cv::KeyPoint>& aligned_key_point_list_query);
 
 void create_point2f_list_aligned_with_matches(
       const common::vec1d<cv::DMatch>& matches,
-      const common::vec1d<cv::KeyPoint>& key_point_list1,
-      const common::vec1d<cv::KeyPoint>& key_point_list2,
-      common::vec1d<cv::Point2f>& aligned_point2f_list1,
-      common::vec1d<cv::Point2f>& aligned_point2f_list2);
+      const common::vec1d<cv::KeyPoint>& key_point_list_train,
+      const common::vec1d<cv::KeyPoint>& key_point_list_query,
+      common::vec1d<cv::Point2f>& aligned_point2f_list_train,
+      common::vec1d<cv::Point2f>& aligned_point2f_list_query);
 
 }
 }

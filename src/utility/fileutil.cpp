@@ -1,6 +1,7 @@
 
 // System
 #include <iostream>
+#include <fstream>
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -8,6 +9,7 @@
 
 // Original
 #include <utility/fileutil.h>
+#include <common/container.h>
 
 // Static Functions.
 namespace {
@@ -63,7 +65,7 @@ void load_images(const std::vector<std::string>& img_path_list,
   }
 }
 
-void raise_all_files_in_directory(
+void raise_all_img_files_in_directory(
       const std::string& dirpath, 
       std::vector<std::string>& img_path_list, 
       std::vector<std::string>& img_filename_list,
@@ -83,6 +85,39 @@ void raise_all_files_in_directory(
       }
     }
   }
+}
+
+bool read_calib_file(
+      const std::string& filepath,
+      common::CamIntrinsics& cam_intr) {
+  
+  std::ifstream ifs(filepath);
+  if (ifs.fail()) {
+    std::cout << "Failed at read_calib_file" << std::endl;
+    return false;
+    
+  }
+
+  {
+    std::string line;
+    // 1st line
+    getline(ifs, line);
+    sscanf(line.c_str(), "%lf %lf %lf", &cam_intr.K(0,0), &cam_intr.K(0,1), &cam_intr.K(0,2));
+
+    // 2nd line
+    getline(ifs, line);
+    sscanf(line.c_str(), "%lf %lf %lf", &cam_intr.K(1,0), &cam_intr.K(1,1), &cam_intr.K(1,2));
+
+    // 2nd line
+    getline(ifs, line);
+    sscanf(line.c_str(), "%lf %lf %lf", &cam_intr.K(2,0), &cam_intr.K(2,1), &cam_intr.K(2,2));
+  }
+  cam_intr.Kinv = cam_intr.K.inv();
+
+  std::cout << "Read CamIntrinsics is .... " << std::endl;
+  std::cout << cam_intr.K << std::endl;
+
+  return true;
 }
 
 }

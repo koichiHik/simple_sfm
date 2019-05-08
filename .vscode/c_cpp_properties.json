@@ -5,7 +5,9 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "../../3rdParty/opencv24137/install/include",
-                "/usr/include/boost"
+                "../../3rdParty/eigen334/install/include/eigen3",
+                "/usr/include/boost",
+                "/usr/include/pcl-1.7"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",

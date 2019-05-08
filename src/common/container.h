@@ -45,9 +45,16 @@ struct CamIntrinsics {
 };
 
 struct CloudPoint {
-  cv::Point3d pt;
-  std::vector<size_t> existence_in_img;
+
+  CloudPoint() :
+    valid(false), reprojection_err(0.0),
+    pt(), idx_in_img()
+  {}
+
+  bool valid;
   double reprojection_err;
+  cv::Point3d pt;
+  std::vector<int> idx_in_img;
 };
 
 }

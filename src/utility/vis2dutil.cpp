@@ -82,23 +82,24 @@ void draw_matched_imgs(const common::vec1d<cv::Mat>& img_list,
     cv::namedWindow(window_name);
   }
 
-  for (size_t i = 0; i < img_num - 1; i++) {
-    for (size_t j = i + 1; j < img_num; j++) {
-      const std::pair<size_t, size_t> key = std::make_pair(i, j);
+  for (size_t query_img_idx = 0; query_img_idx < img_num - 1; query_img_idx++) {
+    for (size_t train_img_idx = query_img_idx + 1; train_img_idx < img_num; train_img_idx++) {
+
+      const std::pair<size_t, size_t> key = std::make_pair(train_img_idx, query_img_idx);
       matched_imgs[key] = cv::Mat();
       const common::vec1d<cv::DMatch>& match 
           = common::getMapValue(match_mat, key);
       //std::cout << "(i, j)" << i << ", " << j << std::endl;
       //std::cout << "before drawMatches" << std::endl;
-      cv::drawMatches(img_list[i], key_point_list[i],
-                      img_list[j], key_point_list[j],
+      cv::drawMatches(img_list[query_img_idx], key_point_list[query_img_idx],
+                      img_list[train_img_idx], key_point_list[train_img_idx],
                       match, matched_imgs[key],
                       match_clr, single_clr, 
                       std::vector<char>(), flags);
       //std::cout << "after drawMatches" << std::endl;     
       if (show) {
         std::string text = 
-          "Match between " + std::to_string(i) + " vs " + std::to_string(j);
+          "Match between " + std::to_string(query_img_idx) + " vs " + std::to_string(train_img_idx);
         resize_and_show(matched_imgs[key], window_name, scale, delay, false);
       }
       //std::cout << "after show" << std::endl;     

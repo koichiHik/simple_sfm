@@ -53,8 +53,8 @@ void GPUBruteForceMatcherWithRatioCheck::createMatchingMatrix(
           valid_match.push_back(knn_match[i][0]);
         }
       }
-      match_matrix[std::make_pair(query_idx, train_idx)] = valid_match;
-      match_matrix[std::make_pair(train_idx, query_idx)] = flipMatches(valid_match); 
+      match_matrix[std::make_pair(train_idx, query_idx)] = valid_match;
+      match_matrix[std::make_pair(query_idx, train_idx)] = flipMatches(valid_match); 
       std::cout << "Match between " << query_idx << " vs " << train_idx << " : ";
       std::cout << "VALID / TOTAL : " << valid_match.size() << " / " << knn_match.size() << std::endl;
     }
@@ -80,7 +80,10 @@ void GPUBruteForceMatcherWithRatioCheck::match(
         pairIdx, distance, all_dist, K);
   
   m_intl->m_matcher.knnMatchDownload(
-        pairIdx, distance, matches); 
+        pairIdx, distance, matches);
+
+  // This is necessary to keep same result.
+  std::sort(matches.begin(), matches.end());
 }
 
 }
