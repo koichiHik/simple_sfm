@@ -280,6 +280,10 @@ int sfm_run(int argc, char** argv) {
          citr++) {
       size_t train_img_idx = citr->second.first;
       size_t query_img_idx = citr->second.second;
+
+      std::cout << std::endl << "Try to find camera matrix : " 
+      << train_img_idx << " and " << query_img_idx << std::endl;
+
       common::vec1d<cv::DMatch> matches = match_result.f_ref_matrix[citr->second];
       common::vec1d<cv::Point2f> aligned_point2f_list_train, aligned_point2f_list_query;
       common::container_util::create_point2f_list_aligned_with_matches(
@@ -288,12 +292,13 @@ int sfm_run(int argc, char** argv) {
         aligned_point2f_list_train, aligned_point2f_list_query);
 
       // Initialize P everytime.
+      common::vec1d<common::Point3dWithRepError> tmp_point3d_w_reperr_list;
       cv::Matx34d tmp_P(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0);
       cam_mat_result = cam_mat_result || geometry::find_camera_matrix(
         config.cam_intr, 
         aligned_point2f_list_train, 
         aligned_point2f_list_query,
-        Porigin, tmp_P, cloud.point_cloud);
+        Porigin, tmp_P, tmp_point3d_w_reperr_list);
 
       if(cam_mat_result) {
         P = tmp_P;
@@ -309,9 +314,13 @@ int sfm_run(int argc, char** argv) {
         std::cout << std::endl << "Camera Matrix Found. P : " << std::endl;
         std::cout << P << std::endl;
 
+        common::container_util::convert_point3d_w_reperr_list_to_cloud_point_list(
+          images.org_imgs.size(), tmp_point3d_w_reperr_list, cloud.point_cloud
+        );
+
         for (size_t idx = 0; idx < cloud.point_cloud.size(); idx++) {
           cloud.point_cloud[idx].idx_in_img.resize(images.org_imgs.size(), -1);
-          if (cloud.point_cloud[idx].valid) {
+          if (cloud.point_cloud[idx].pt.valid) {
             cloud.point_cloud[idx].idx_in_img[train_img_idx] = matches[idx].trainIdx;
             cloud.point_cloud[idx].idx_in_img[query_img_idx] = matches[idx].queryIdx;
           }
@@ -409,7 +418,7 @@ int sfm_run(int argc, char** argv) {
           features.key_points[train_img_idx], features.key_points[query_img_idx],
           aligned_point2d_list_train, aligned_point2d_list_query);
 
-        common::vec1d<CloudPoint> cp_triangulated;
+        common::vec1d<Point3dWithRepError> tmp_point3d_w_reperr;
         bool tri_result 
           = triangulate_points_and_validate(
               aligned_point2d_list_train,
@@ -417,7 +426,12 @@ int sfm_run(int argc, char** argv) {
               config.cam_intr,
               cam_poses.poses[train_img_idx],
               cam_poses.poses[query_img_idx],
-              cp_triangulated);
+              tmp_point3d_w_reperr);
+
+        common::vec1d<CloudPoint> cp_triangulated;
+        common::container_util::convert_point3d_w_reperr_list_to_cloud_point_list(
+          images.org_imgs.size(), tmp_point3d_w_reperr, cp_triangulated
+        );
 
         if (!tri_result) {
           continue;
@@ -430,7 +444,7 @@ int sfm_run(int argc, char** argv) {
 
         // Loop : New point cloud.
         for (size_t new_cp_idx = 0; new_cp_idx < cp_triangulated.size(); new_cp_idx++) {
-          if (!cp_triangulated[new_cp_idx].valid) {
+          if (!cp_triangulated[new_cp_idx].pt.valid) {
             continue;
           }
 
@@ -453,12 +467,10 @@ int sfm_run(int argc, char** argv) {
             }
 
             // This point new and has to be added.
-            CloudPoint cp;
-            cp.idx_in_img.resize(images.org_imgs.size());
+            CloudPoint cp(images.org_imgs.size());
             cp.idx_in_img[train_img_idx] = new_cp_train_idx;
             cp.idx_in_img[query_img_idx] = new_cp_query_idx;
             cp.pt = cp_triangulated[new_cp_idx].pt;
-            cp.reprojection_err = cp_triangulated[new_cp_idx].reprojection_err;
             add_to_cloud.push_back(cp);
             added_point.insert(new_cp_train_idx);
           }

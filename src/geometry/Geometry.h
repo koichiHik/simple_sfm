@@ -38,7 +38,7 @@ double triangulate_points(
       const common::CamIntrinsics& cam_intr,
       const cv::Matx34d& P1,
       const cv::Matx34d& P2,
-      common::vec1d<common::CloudPoint>& point3d);
+      common::vec1d<common::Point3dWithRepError>& point3d_w_err);
 
 cv::Matx41d iterative_linear_ls_triangulation(
       const cv::Point3d& norm_pnt1,
@@ -58,7 +58,7 @@ bool triangulate_points_and_validate(
       const common::CamIntrinsics& cam_intr,
       const cv::Matx34d& Porigin,
       const cv::Matx34d& P,
-      common::vec1d<common::CloudPoint>& point3d,
+      common::vec1d<common::Point3dWithRepError>& point3d_w_err,
       double reproj_error_thresh = TRI_REPROJ_ERR_THRESH,
       double point_ratio_in_front_of_cam = POINT_RATIO_IN_FRONT_CAM);
 
@@ -74,7 +74,7 @@ bool find_camera_matrix(
       const common::vec1d<cv::Point2f>& img_point_set2,
       const cv::Matx34d& Porigin,
       cv::Matx34d& P,
-      common::vec1d<common::CloudPoint>& point3d);
+      common::vec1d<common::Point3dWithRepError>& point3d_w_reperr_list);
 
 }
 }

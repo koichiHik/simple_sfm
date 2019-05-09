@@ -17,6 +17,7 @@ namespace {
 
 const double INLIER_THRESH_FOR_PNP_REPROJ = 10.0;
 const double INLIER_RATIO_THRESH_FOR_PNP_REPROJ = 0.2;
+const double INLIER_RATIO_FOR_PNP_RANSAC = 0.7;
 
 }
 
@@ -210,10 +211,10 @@ double triangulate_points(
       const common::CamIntrinsics& cam_intr,
       const cv::Matx34d& Porigin,
       const cv::Matx34d& P1,
-      common::vec1d<common::CloudPoint>& point_cloud) {
+      common::vec1d<common::Point3dWithRepError>& point3d_w_err) {
 
   assert(img_point_set.size() == img_point_set1.size());
-  point_cloud.clear();
+  point3d_w_err.clear();
 
   cv::Matx34d KP1 = cam_intr.K * P1;
   common::vec1d<double> reproj_errors;
@@ -237,10 +238,10 @@ double triangulate_points(
         rep_img_coord(1) / rep_img_coord(2));
       reproj_err = cv::norm(rep_img_normalized - img_point_set1[i]);
       reproj_errors.push_back(reproj_err);
-      common::CloudPoint cp;
-      cp.pt = cv::Point3d(X(0), X(1), X(2));
-      cp.reprojection_err = reproj_err;
-      point_cloud.push_back(cp);
+      common::Point3dWithRepError pt_w_err;
+      pt_w_err.coord = cv::Point3d(X(0), X(1), X(2));
+      pt_w_err.reprojection_err = reproj_err;
+      point3d_w_err.push_back(pt_w_err);
     }
   }
  
@@ -291,33 +292,33 @@ cv::Matx41d iterative_linear_ls_triangulation(
 }
 
 bool validate_triangulated_points_via_reprojection(
-      const common::vec1d<common::CloudPoint>& cloud_point,
+      const common::vec1d<common::Point3dWithRepError>& point3d_w_err_list,
       const cv::Matx34d& P,
       std::vector<uint8_t>& status,
       double point_ratio_in_front_of_cam) {
 
-  common::vec1d<cv::Point3d> point3d_projected(cloud_point.size());
+  common::vec1d<cv::Point3d> point3d_projected(point3d_w_err_list.size());
   {
     cv::Matx44d P4x4 = cv::Matx44f::eye();
     for (int i = 0; i < 12; i++) {
       P4x4.val[i] = P.val[i];
     }
     common::vec1d<cv::Point3d> point3d_list;
-    common::container_util::convert_cloud_point_list_to_point3d_list(
-      cloud_point, 
+    common::container_util::convert_point3d_w_reperr_list_to_point3d_list(
+      point3d_w_err_list,
       point3d_list);
 
     cv::perspectiveTransform(point3d_list, point3d_projected, P4x4);
   }
 
   // If reprojected point is in front of camera, valid.
-  status.resize(cloud_point.size());
+  status.resize(point3d_w_err_list.size());
   for (int i = 0; i < point3d_projected.size(); i++) {
     status[i] = (point3d_projected[i].z > 0) ? 1 : 0;
   }
 
   int valid_count = cv::countNonZero(status);
-  double front_point_ratio = ((double)valid_count / cloud_point.size());
+  double front_point_ratio = ((double)valid_count / point3d_w_err_list.size());
   return front_point_ratio > point_ratio_in_front_of_cam;
 }
 
@@ -327,7 +328,7 @@ bool triangulate_points_and_validate(
       const common::CamIntrinsics& cam_intr,
       const cv::Matx34d& Porigin,
       const cv::Matx34d& P,
-      common::vec1d<common::CloudPoint>& point_cloud,
+      common::vec1d<common::Point3dWithRepError>& point3d_w_err,
       double reproj_error_thresh,
       double point_ratio_in_front_of_cam) { 
 
@@ -351,28 +352,28 @@ bool triangulate_points_and_validate(
                          cam_intr,
                          Porigin,
                          P,
-                         point_cloud);
+                         point3d_w_err);
 
-  common::vec1d<common::CloudPoint> dummy_point_cloud;
+  common::vec1d<common::Point3dWithRepError> dummy_point3d_w_err;
   double reproj_error2
     = triangulate_points(img_point_set2,
                          img_point_set1,
                          cam_intr,
                          P,
                          Porigin,
-                         dummy_point_cloud);    
+                         dummy_point3d_w_err);    
 
   common::vec1d<  uint8_t> status1, status2;
   bool validity1 = validate_triangulated_points_via_reprojection(
-                        point_cloud, Porigin, status1, 
+                        point3d_w_err, Porigin, status1, 
                         point_ratio_in_front_of_cam);
   
   bool validity2 = validate_triangulated_points_via_reprojection(
-                        dummy_point_cloud, P, status2, 
+                        dummy_point3d_w_err, P, status2, 
                         point_ratio_in_front_of_cam);
 
   for (size_t idx = 0; idx < status1.size(); idx++) {
-    point_cloud[idx].valid = (status1[idx] != 0 && status2[idx] != 0) ? true : false;
+    point3d_w_err[idx].valid = (status1[idx] != 0 && status2[idx] != 0) ? true : false;
   }
 
   if (!validity1 || !validity2 ||
@@ -419,7 +420,7 @@ bool find_camera_matrix_via_pnp(
 
     cv::solvePnPRansac(
       point3d_mat, point2d_mat, cam_intr.K, cam_intr.distortion_coeff,
-      rvec, T, false, 100, 8.0f, 50);
+      rvec, T, false, 100, 3.0f, int(INLIER_RATIO_FOR_PNP_RANSAC * point2d_list.size()));
 
     cv::Rodrigues(rvec, R);
     compose_R_T_to_P(R, T, P);
@@ -468,11 +469,11 @@ bool find_camera_matrix(
       const common::vec1d<cv::Point2f>& img_point_set2,
       const cv::Matx34d& Porigin,
       cv::Matx34d& P,
-      common::vec1d<common::CloudPoint>& point3d) {
+      common::vec1d<common::Point3dWithRepError>& point3d_w_reperr_list) {
 
   // Initialize Output.
   P = 0;
-  point3d.clear();
+  point3d_w_reperr_list.clear();
 
   // Fundamental Matrix Calculation.
   cv::Matx33d F;
@@ -534,16 +535,16 @@ bool find_camera_matrix(
   for (common::vec1d<cv::Matx34d>::const_iterator citr = configs.cbegin();
        citr != configs.cend();
        citr++) {
-    common::vec1d<common::CloudPoint> tmp_point3d;
+    common::vec1d<common::Point3dWithRepError> tmp_point3d_w_reperr;
     bool result = triangulate_points_and_validate(
                     img_point_set1, img_point_set2, cam_intr, 
-                    Porigin, *citr, tmp_point3d);
+                    Porigin, *citr, tmp_point3d_w_reperr);
 
 
     if (result) {
       P = *citr;
-      point3d.resize(tmp_point3d.size());
-      std::copy(tmp_point3d.begin(), tmp_point3d.end(), point3d.begin());
+      point3d_w_reperr_list.resize(tmp_point3d_w_reperr.size());
+      std::copy(tmp_point3d_w_reperr.begin(), tmp_point3d_w_reperr.end(), point3d_w_reperr_list.begin());
       std::cout << std::endl << "Found valid configuration!" << std::endl;
       return true;
     } else {

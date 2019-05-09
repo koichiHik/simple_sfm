@@ -66,6 +66,9 @@ void populate_pcl_point_clouds(
   for (size_t idx = 0; idx < point_cloud_dists.size(); idx++) {
     // Color
     cv::Vec3b rgbv = point_cloud_clrs[idx];
+
+    //std::cout << "RGB : " << (int)rgbv[2] << ", " << (int)rgbv[1] << ", " << (int)rgbv[0] << std::endl;
+
     // Position
     pcl::PointXYZRGB pclp(rgbv[2], rgbv[1], rgbv[0]);
     pclp.x = point_cloud_dists[idx].x;
@@ -179,22 +182,33 @@ void create_rgb_vector_from_point_cloud(
   rgb_vecs.resize(point_cloud.size());
 
   using c_itr = common::vec1d<common::CloudPoint>::const_iterator;
-  for (size_t pt_idx = 0; pt_idx < point_cloud.size(); pt_idx++) {   
+
+  // Loop : Point Cloud.
+  for (size_t cp_idx = 0; cp_idx < point_cloud.size(); cp_idx++) {   
     
+    common::CloudPoint cp = point_cloud[cp_idx];
     common::vec1d<cv::Vec3b> point_clrs;
-    for (size_t img_idx = 0; img_idx < point_cloud[pt_idx].idx_in_img.size(); img_idx++) {
-      if (point_cloud[pt_idx].idx_in_img[img_idx] != -1) {
-        size_t pt_idx_in_img = point_cloud[pt_idx].idx_in_img[img_idx];
+    // Loop : Image in which the ponit is visible.
+    for (size_t img_idx = 0; img_idx < original_imgs.size(); img_idx++) {
+      
+      size_t pt_idx_in_img = cp.idx_in_img[img_idx];
+      // This point is visible in "img_idx"
+      if (pt_idx_in_img != -1) {
         assert(pt_idx_in_img < key_points[img_idx].size());
         assert(img_idx < original_imgs.size());
         cv::Point pt = key_points[img_idx][pt_idx_in_img].pt;
         assert(pt.x < original_imgs[img_idx].cols && pt.y < original_imgs[img_idx].rows);
+
+        //cv::Vec3b rgbv = original_imgs[img_idx].at<cv::Vec3b>(pt);
         point_clrs.push_back(original_imgs[img_idx].at<cv::Vec3b>(pt));
+
+        //std::cout << "RGB : " << (int)rgbv[2] << ", " << (int)rgbv[1] << ", " << (int)rgbv[0] << std::endl;
+
       }
     }
 
     cv::Scalar color = cv::mean(point_clrs);
-    rgb_vecs[pt_idx] = (cv::Vec3b(color[0], color[1], color[2]));
+    rgb_vecs[cp_idx] = (cv::Vec3b(color[0], color[1], color[2]));
   }
 }
 

@@ -25,6 +25,19 @@ void convert_cloud_point_list_to_point3d_list(
       const common::vec1d<common::CloudPoint>& cloud_point_list,
       common::vec1d<cv::Point3d>& point3d_list);
 
+void convert_point3d_w_reperr_list_to_point3f_list(
+      const common::vec1d<common::Point3dWithRepError>& point3d_w_reperr_list,
+      common::vec1d<cv::Point3f>& point3f_list);
+
+void convert_point3d_w_reperr_list_to_point3d_list(
+      const common::vec1d<common::Point3dWithRepError>& point3d_w_reperr_list,
+      common::vec1d<cv::Point3d>& point3d_list);
+
+void convert_point3d_w_reperr_list_to_cloud_point_list(
+      int image_num,
+      const common::vec1d<common::Point3dWithRepError>& point3d_w_reperr_list,
+      common::vec1d<common::CloudPoint>& cloud_point_list);
+
 void create_key_point_list_aligned_with_matches(
       const common::vec1d<cv::DMatch>& matches,
       const common::vec1d<cv::KeyPoint>& key_point_list_train,

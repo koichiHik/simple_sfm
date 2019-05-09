@@ -88,7 +88,7 @@ void extract_corresp_2d3dpnts_between_img_pnts_and_point_cloud(
         if (cloud[cp_idx].idx_in_img[train_img_idx] == idx_in_train_img &&
             pcloud_status[cp_idx] == 0) {
           corresp_2d_pnts.push_back(img_pnts[query_img_idx][citr_match->queryIdx]);
-          corresp_3d_pnts.push_back(cloud[cp_idx].pt);
+          corresp_3d_pnts.push_back(cloud[cp_idx].pt.coord);
 
           // Avoid duplicated point insertion.
           pcloud_status[cp_idx] = 1;

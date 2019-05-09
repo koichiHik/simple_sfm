@@ -41,12 +41,14 @@ void convert_A_list_to_B_list(
       common::vec1d<B>& B_list,
       CopyFunctor copyFunc) {
 
-  B_list.resize(A_list.size());
-  std::transform(
-    A_list.begin(),
-    A_list.end(),
-    B_list.begin(),
-    copyFunc);
+  B_list.clear();
+  B_list.reserve(A_list.size());
+  for (typename common::vec1d<A>::const_iterator citr = A_list.cbegin();
+       citr != A_list.cend();
+       citr++) {
+    B_list.push_back(copyFunc(*citr));
+  }
+
 }
 
 }
@@ -70,7 +72,7 @@ void convert_cloud_point_list_to_point3f_list(
       const common::vec1d<common::CloudPoint>& cloud_point_list,
       common::vec1d<cv::Point3f>& point3f_list) {
 
-  auto copyFunc = [](const common::CloudPoint& p) -> cv::Point3f { return p.pt; };
+  auto copyFunc = [](const common::CloudPoint& p) -> cv::Point3f { return p.pt.coord; };
   convert_A_list_to_B_list<common::CloudPoint, cv::Point3f>(
     cloud_point_list,
     point3f_list,
@@ -81,16 +83,69 @@ void convert_cloud_point_list_to_point3d_list(
       const common::vec1d<common::CloudPoint>& cloud_point_list,
       common::vec1d<cv::Point3d>& point3d_list) {
 
-  auto copyFunc = [](const common::CloudPoint& p) -> cv::Point3d { return p.pt; };
+  auto copyFunc = [](const common::CloudPoint& p) -> cv::Point3d { return p.pt.coord; };
   convert_A_list_to_B_list<common::CloudPoint, cv::Point3d>(
     cloud_point_list,
     point3d_list,
     copyFunc);
 }
 
-void convert_cloud_point_list_to_point3f_list(
-      const common::vec1d<common::CloudPoint>& cloud_point_list,
-      common::vec1d<cv::Point3f>& point3f_list);
+void convert_point3d_w_reperr_list_to_point3f_list(
+      const common::vec1d<common::Point3dWithRepError>& point3d_w_reperr_list,
+      common::vec1d<cv::Point3f>& point3f_list) {
+
+  auto copyFunc = [](const common::Point3dWithRepError& p) -> cv::Point3f { return p.coord; };
+  convert_A_list_to_B_list<common::Point3dWithRepError, cv::Point3f>(
+    point3d_w_reperr_list,
+    point3f_list,
+    copyFunc);
+}
+
+void convert_point3d_w_reperr_list_to_point3d_list(
+      const common::vec1d<common::Point3dWithRepError>& point3d_w_reperr_list,
+      common::vec1d<cv::Point3d>& point3d_list) {
+
+  auto copyFunc = [](const common::Point3dWithRepError& p) -> cv::Point3d { return p.coord; };
+  convert_A_list_to_B_list<common::Point3dWithRepError, cv::Point3d>(
+    point3d_w_reperr_list,
+    point3d_list,
+    copyFunc);
+}
+
+void convert_point3d_w_reperr_list_to_cloud_point_list(
+      int image_num,
+      const common::vec1d<common::Point3dWithRepError>& point3d_w_reperr_list,
+      common::vec1d<common::CloudPoint>& cloud_point_list) {
+
+  /*
+  auto copyFunc = [=](const common::Point3dWithRepError& p) -> common::CloudPoint {
+      common::CloudPoint cp(image_num);
+      cp.pt = p;
+      return cp; 
+    };
+  */
+
+  struct CopyFunctor {
+
+    CopyFunctor(int num) {
+      image_num = num;
+    }
+
+    common::CloudPoint operator()(const common::Point3dWithRepError& p) {
+      common::CloudPoint cp(image_num);
+      cp.pt = p;
+      return cp; 
+    }
+    int image_num;
+  };
+
+  CopyFunctor copyFunctor(image_num);
+
+  convert_A_list_to_B_list<common::Point3dWithRepError, common::CloudPoint, CopyFunctor>(
+    point3d_w_reperr_list,
+    cloud_point_list,
+    copyFunctor);
+}
 
 void create_key_point_list_aligned_with_matches(
       const common::vec1d<cv::DMatch>& matches,

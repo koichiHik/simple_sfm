@@ -44,16 +44,32 @@ struct CamIntrinsics {
   cv::Mat_<double> distortion_coeff;
 };
 
-struct CloudPoint {
+struct Point3dWithRepError {
 
-  CloudPoint() :
-    valid(false), reprojection_err(0.0),
-    pt(), idx_in_img()
+  Point3dWithRepError() :
+    valid(false), 
+    reprojection_err(0.0),
+    coord(0.0, 0.0, 0.0)
   {}
 
   bool valid;
   double reprojection_err;
-  cv::Point3d pt;
+  cv::Point3d coord;
+};
+
+struct CloudPoint {
+
+  /*
+  CloudPoint() :
+    pt(), idx_in_img()
+  {}
+  */  
+
+  CloudPoint(int img_num) :
+    pt(), idx_in_img(img_num, -1)
+  {}
+
+  Point3dWithRepError pt;
   std::vector<int> idx_in_img;
 };
 
