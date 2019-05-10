@@ -117,14 +117,6 @@ void convert_point3d_w_reperr_list_to_cloud_point_list(
       const common::vec1d<common::Point3dWithRepError>& point3d_w_reperr_list,
       common::vec1d<common::CloudPoint>& cloud_point_list) {
 
-  /*
-  auto copyFunc = [=](const common::Point3dWithRepError& p) -> common::CloudPoint {
-      common::CloudPoint cp(image_num);
-      cp.pt = p;
-      return cp; 
-    };
-  */
-
   struct CopyFunctor {
 
     CopyFunctor(int num) {

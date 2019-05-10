@@ -89,20 +89,16 @@ void draw_matched_imgs(const common::vec1d<cv::Mat>& img_list,
       matched_imgs[key] = cv::Mat();
       const common::vec1d<cv::DMatch>& match 
           = common::getMapValue(match_mat, key);
-      //std::cout << "(i, j)" << i << ", " << j << std::endl;
-      //std::cout << "before drawMatches" << std::endl;
       cv::drawMatches(img_list[query_img_idx], key_point_list[query_img_idx],
                       img_list[train_img_idx], key_point_list[train_img_idx],
                       match, matched_imgs[key],
                       match_clr, single_clr, 
                       std::vector<char>(), flags);
-      //std::cout << "after drawMatches" << std::endl;     
       if (show) {
         std::string text = 
           "Match between " + std::to_string(query_img_idx) + " vs " + std::to_string(train_img_idx);
         resize_and_show(matched_imgs[key], window_name, scale, delay, false);
       }
-      //std::cout << "after show" << std::endl;     
     }
   }
 

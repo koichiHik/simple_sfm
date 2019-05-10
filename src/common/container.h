@@ -59,12 +59,6 @@ struct Point3dWithRepError {
 
 struct CloudPoint {
 
-  /*
-  CloudPoint() :
-    pt(), idx_in_img()
-  {}
-  */  
-
   CloudPoint(int img_num) :
     pt(), idx_in_img(img_num, -1)
   {}

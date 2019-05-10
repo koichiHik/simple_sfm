@@ -68,7 +68,6 @@ void load_images(const std::vector<std::string>& img_path_list,
 void raise_all_img_files_in_directory(
       const std::string& dirpath, 
       std::vector<std::string>& img_path_list, 
-      std::vector<std::string>& img_filename_list,
       const std::vector<std::string>& exts) {
 
   std::vector<std::string> tmp_img_path_list, tmp_file_name_list;
@@ -80,7 +79,6 @@ void raise_all_img_files_in_directory(
     for (auto ext : exts) {
       if (abs_path.find(ext) == abs_path.size() - ext.size()) {
         img_path_list.push_back(abs_path);
-        img_filename_list.push_back(filename);
         break;
       }
     }

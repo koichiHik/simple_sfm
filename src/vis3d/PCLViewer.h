@@ -13,17 +13,23 @@
 
 // Original
 #include <common/container.h>
+#include <app/if_app_viewer.h>
 
 namespace simple_sfm {
 namespace vis3d {
 
 struct PCLViewerInternalStorage;
 struct PCLViewerHandler;
-class PCLViewer {
+class PCLViewer : public app::SfmResultUpdateListener {
 public:
-  PCLViewer(const std::string& window_name = "PCL Viewer");
+  PCLViewer(const std::string& window_name,
+            const common::vec1d<cv::Mat>& org_img_list,
+            const common::vec2d<cv::KeyPoint>& key_point_lists);
 
   ~PCLViewer();
+
+  virtual void Update(const common::vec1d<common::CloudPoint>& cloud,
+                      const common::vec1d<cv::Matx34d>& poses);
 
   void run_visualization();
 

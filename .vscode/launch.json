@@ -11,7 +11,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/build/src/app/simple_sfm",
       "args": ["-d",
-               "~/workspace/3rdParty/SfM_quality_evaluation/Benchmarking_Camera_Calibration_2008/fountain-P11/images"
+               "~/workspace/3rdParty/SfM_quality_evaluation/Benchmarking_Camera_Calibration_2008/fountain-P11/test_images"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

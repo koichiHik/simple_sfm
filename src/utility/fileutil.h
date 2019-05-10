@@ -27,7 +27,7 @@ void load_images(const std::vector<std::string>& img_path_list,
 void raise_all_img_files_in_directory(
       const std::string& dirpath, 
       std::vector<std::string>& img_path_list, 
-      std::vector<std::string>& img_filename_list,
+      //std::vector<std::string>& img_filename_list,
       const std::vector<std::string>& exts = std::vector<std::string>());
 
 bool read_calib_file(

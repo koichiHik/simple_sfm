@@ -25,6 +25,8 @@
 // Original
 #include <vis3d/PCLViewer.h>
 #include <vis3d/PCLDrawer.h>
+#include <common/container.h>
+#include <common/container_util.h>
 
 namespace {
 
@@ -45,8 +47,11 @@ namespace simple_sfm {
 namespace vis3d {
 
 struct PCLViewerInternalStorage {
-  PCLViewerInternalStorage(const std::string& window_name) :
-    m_window_name(window_name), m_cloud_name(""),
+  PCLViewerInternalStorage(const std::string& window_name, 
+                           const common::vec1d<cv::Mat>& org_img_list,
+                           const common::vec2d<cv::KeyPoint>& key_point_lists) :
+    m_window_name(window_name), m_cloud_name(""), m_org_img_list(org_img_list),
+    m_key_point_lists(key_point_lists),
     m_quit(false), m_cloud_updated(false), m_camera_updated(false),
     point_cloud(nullptr), m_p_vis_thread(nullptr) 
   {}
@@ -54,6 +59,9 @@ struct PCLViewerInternalStorage {
   bool m_quit, m_cloud_updated, m_camera_updated;
   std::string m_window_name, m_cloud_name;
   std::unique_ptr<std::thread> m_p_vis_thread;
+
+  const common::vec1d<cv::Mat>& m_org_img_list;
+  const common::vec2d<cv::KeyPoint>& m_key_point_lists;
 
   // Drawing elements.
   common::vec1d<std::pair<std::string,pcl::PolygonMesh> > cam_meshes;
@@ -74,12 +82,30 @@ struct PCLViewerHandler {
   }
 };
 
-PCLViewer::PCLViewer(const std::string& window_name) :
-  m_intl(new PCLViewerInternalStorage(window_name))
+PCLViewer::PCLViewer(const std::string& window_name, 
+                     const common::vec1d<cv::Mat>& org_img_list,
+                     const common::vec2d<cv::KeyPoint>& key_point_lists) :
+  m_intl(new PCLViewerInternalStorage(window_name, org_img_list, key_point_lists))
 {}
 
 PCLViewer::~PCLViewer()
 {}
+
+void PCLViewer::Update(const common::vec1d<common::CloudPoint>& cloud,
+                       const common::vec1d<cv::Matx34d>& poses) {
+
+  common::vec1d<cv::Vec3b> rgb_clrs;
+  common::vec1d<cv::Point3d> point3d_list;
+
+  create_rgb_vector_from_point_cloud(
+    m_intl->m_key_point_lists, m_intl->m_org_img_list, cloud, rgb_clrs);
+
+  common::container_util::convert_cloud_point_list_to_point3d_list(
+    cloud, point3d_list);
+
+  this->update(point3d_list, rgb_clrs, poses);
+  
+}
 
 void PCLViewer::run_visualization_async() {
   m_intl->m_p_vis_thread.reset(new std::thread(&PCLViewer::run_visualization, this));

@@ -1,7 +1,13 @@
 project(simple_sfm)
 cmake_minimum_required(VERSION 2.8)
 
-add_executable(simple_sfm 
+add_executable(simple_sfm
+  fmat_point3d_gen_runner.cpp
+  match_filtering_runner.cpp
+  pnp_point3d_gen_runner.cpp
+  point2d_matching_runner.cpp
+  sfm_runner.cpp
+  app_util.cpp
   main.cpp
 )
 
