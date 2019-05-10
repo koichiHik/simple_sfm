@@ -6,7 +6,7 @@
 #include <opencv2/core.hpp>
 
 // Original
-#include <descriptor_matcher/IDescriptorMatcher.h>
+#include <descriptor_matcher/i_descriptor_matcher.h>
 
 namespace simple_sfm {
 namespace descriptor_matcher {

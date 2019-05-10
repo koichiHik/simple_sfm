@@ -30,16 +30,12 @@ struct PNPPoint3DGenGenConst : public AlgoIF {
 struct PNPPoint3DGenGen : public AlgoIF {
 
   PNPPoint3DGenGen(SfmDB& db) :
-    //point_cloud(db.sfm_result.point_cloud),
-    //cam_poses(db.sfm_result.cam_poses),
     sfm_result(db.sfm_result),
     processed_view(db.algo_status.processed_view),
     pose_recovered_view(db.algo_status.pose_recovered_view),
     adopted_view(db.algo_status.adopted_view)
   {}
 
-  //common::vec1d<common::CloudPoint>& point_cloud;
-  //common::vec1d<cv::Matx34d>& cam_poses;
   SfmResult& sfm_result;
   std::set<size_t>& processed_view;
   std::set<size_t>& pose_recovered_view;

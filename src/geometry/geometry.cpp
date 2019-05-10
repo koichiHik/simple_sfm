@@ -11,7 +11,7 @@
 #include <common/math.h>
 #include <common/debug_helper.h>
 #include <common/container_util.h>
-#include <geometry/Geometry.h>
+#include <geometry/geometry.h>
 
 namespace {
 

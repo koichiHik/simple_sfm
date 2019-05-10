@@ -5,7 +5,6 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 add_library(utility
   fileutil.cpp
-  vis2dutil.cpp
 )
 
 target_link_libraries(utility

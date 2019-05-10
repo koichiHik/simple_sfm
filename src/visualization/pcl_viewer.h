@@ -13,10 +13,10 @@
 
 // Original
 #include <common/container.h>
-#include <app/if_app_viewer.h>
+#include <app/i_data_update_listener.h>
 
 namespace simple_sfm {
-namespace vis3d {
+namespace visualization {
 
 struct PCLViewerInternalStorage;
 struct PCLViewerHandler;

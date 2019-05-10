@@ -17,7 +17,7 @@
 #include <common/container.h>
 
 namespace simple_sfm {
-namespace vis3d {
+namespace visualization {
 
 void draw_point_clouds(
   const common::vec1d<cv::Point3d>& point_cloud_dists,

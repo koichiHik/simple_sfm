@@ -12,7 +12,7 @@
 #include <memory>
 
 // Original
-#include <key_point_filter/IKeyPointFilter.h>
+#include <key_point_filter/i_key_point_filter.h>
 #include <common/container.h>
 
 using namespace std;

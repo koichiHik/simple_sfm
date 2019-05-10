@@ -10,15 +10,13 @@
 #include <opencv2/nonfree/gpu.hpp>
 
 // Original
-#include <feature_extractor/ConcreteFeatureExtractor.h>
+#include <feature_extractor/concrete_feature_extractor.h>
 
 namespace simple_sfm {
 namespace feature_extractor {
 
 struct GPUSurfFeatureExtractorInternalStorage {
   cv::gpu::SURF_GPU m_extractor;
-  //std::vector<cv::gpu::GpuMat> m_gpu_imgs;
-  //std::vector<cv::gpu::GpuMat> m_gpu_descriptors;
 };
 
 GPUSurfFeatureExtractor::GPUSurfFeatureExtractor() :

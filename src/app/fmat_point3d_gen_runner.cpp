@@ -5,7 +5,7 @@
 // Original
 #include <common/container.h>
 #include <common/container_util.h>
-#include <geometry/Geometry.h>
+#include <geometry/geometry.h>
 
 
 using namespace simple_sfm::common;
@@ -42,36 +42,6 @@ bool FMatPoint3DGenRunner::Run(
 
   std::vector<std::pair<int, std::pair<size_t, size_t> > > sorted_match_list
     = SortMatchListWrtHomographyInliers(c_interface.f_ref_matrix, c_interface.homo_ref_matrix);
-
-#if 0
-    // 12. Sort img pair in the order of the number of inliers from homography calc.
-  std::vector<std::pair<int, std::pair<size_t, size_t> > > sorted_match_list;
-  {
-    
-    std::cout << std::endl << "12. Sort img pair in the order of the number of inliers from homography calc." << std::endl;
-    for (match_matrix::const_iterator citr = c_interface.homo_ref_matrix.cbegin();
-         citr != c_interface.homo_ref_matrix.cend();
-         citr++) {
-      std::pair<size_t, size_t> key = citr->first;
-      int h_inliers = citr->second.size();
-      int original = common::getMapValue(c_interface.f_ref_matrix, key).size();
-
-      std::pair<int, std::pair<size_t, size_t> > elem;
-      elem.first = (int)(100.0 * (double)h_inliers / (double)original);
-      elem.second = key;
-      sorted_match_list.push_back(elem);
-    }
-    // Sort from low to high.
-    std::sort(
-      sorted_match_list.begin(),
-      sorted_match_list.end(),
-      [](const std::pair<int, std::pair<size_t, size_t>>& a,
-         const std::pair<int, std::pair<size_t, size_t>>& b) {
-           return a.first < b.first;
-         }
-    );
-  }
-#endif
 
   // 13. Calculate 1st Camera Matrix.
   //interface.cam_poses.resize(c_interface.img_path_list.size());
@@ -143,25 +113,6 @@ bool FMatPoint3DGenRunner::Run(
     interface.sfm_result.AddCamPoses(train_img, Porigin);
     interface.sfm_result.AddCamPoses(query_img, P);
   }
-
-  #if 0
-  // Draw Result via PCL Viewer.
-  {
-    vec1d<cv::Vec3b> rgb_clrs;
-    vec1d<cv::Point3d> point3d_list;
-    create_rgb_vector_from_point_cloud(
-      db.feature_match.key_points, db.images.org_imgs, db.sfm_result.point_cloud, rgb_clrs);
-    container_util::convert_cloud_point_list_to_point3d_list(
-      db.sfm_result.point_cloud, point3d_list);
-    viewer.update(point3d_list, rgb_clrs, db.sfm_result.cam_poses);
-
-    cv::Mat dummy(100, 100, CV_8UC1);
-    cv::imshow("dummy", dummy);
-    cv::waitKey(0);
-
-  }
-
-  #endif
 
   return true;
 }

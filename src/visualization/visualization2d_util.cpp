@@ -1,11 +1,10 @@
 
 
 // Original
-#include <utility/vis2dutil.h>
+#include <visualization/visualization2d_util.h>
 
 namespace simple_sfm {
-namespace utility {
-namespace vis2d { 
+namespace visualization {
 
 void resize_and_show(const cv::Mat& image, 
                      const std::string window_name, 
@@ -108,6 +107,5 @@ void draw_matched_imgs(const common::vec1d<cv::Mat>& img_list,
 
 }
 
-} // vis2d
-} // utility
+} // visualization
 } // simple_sfm

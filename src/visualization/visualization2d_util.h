@@ -18,8 +18,7 @@
 #include <common/container.h>
 
 namespace simple_sfm {
-namespace utility {
-namespace vis2d {
+namespace visualization {
 
 void resize_and_show(const common::vec1d<cv::Mat>& images, 
                      const std::string window_name, 
@@ -41,7 +40,6 @@ void draw_matched_imgs(const common::vec1d<cv::Mat>& img_list,
                        double scale = 0.25, int delay = 100,
                        bool show = true);
 
-}
 }
 }
 

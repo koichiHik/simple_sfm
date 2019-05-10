@@ -3,9 +3,9 @@
 #include <app/match_filtering_runner.h>
 
 // Original
-#include <key_point_filter/IKeyPointFilter.h>
-#include <key_point_filter/IKeyPointFilterFactory.h>
-#include <key_point_filter/ConcreteKeyPointFilter.h>
+#include <key_point_filter/i_key_point_filter.h>
+#include <key_point_filter/i_key_point_filter_factory.h>
+#include <key_point_filter/concrete_key_point_filter.h>
 
 using namespace simple_sfm::key_point_filter;
 

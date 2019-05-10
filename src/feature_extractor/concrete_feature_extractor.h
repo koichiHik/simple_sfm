@@ -9,7 +9,7 @@
 #include <memory>
 
 // Original
-#include <feature_extractor/IFeatureExtractor.h>
+#include <feature_extractor/i_feature_extractor.h>
 #include <common/container.h>
 
 namespace simple_sfm {

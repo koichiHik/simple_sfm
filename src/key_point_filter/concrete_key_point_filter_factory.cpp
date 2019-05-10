@@ -6,8 +6,8 @@
 #include <opencv2/core.hpp>
 
 // Original
-#include <key_point_filter/IKeyPointFilterFactory.h>
-#include <key_point_filter/ConcreteKeyPointFilter.h>
+#include <key_point_filter/i_key_point_filter_factory.h>
+#include <key_point_filter/concrete_key_point_filter.h>
 
 namespace simple_sfm {
 namespace key_point_filter {

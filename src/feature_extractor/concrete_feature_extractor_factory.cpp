@@ -6,8 +6,8 @@
 #include <opencv2/core.hpp>
 
 // Original
-#include <feature_extractor/IFeatureExtractorFactory.h>
-#include <feature_extractor/ConcreteFeatureExtractor.h>
+#include <feature_extractor/i_feature_extractor_factory.h>
+#include <feature_extractor/concrete_feature_extractor.h>
 
 namespace simple_sfm {
 namespace feature_extractor {

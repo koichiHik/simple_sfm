@@ -7,24 +7,11 @@
 #include <Eigen/Eigen>
 
 // PCL
-//#include <pcl/common/common.h>
-//#include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
-//#include <pcl/io/io.h>
-//#include <pcl/io/file_io.h>
-//#include <pcl/io/pcd_io.h>
-//#include <pcl/ModelCoefficients.h>
-//#include <pcl/point_types.h>
-//#include <pcl/sample_consensus/ransac.h>
-//#include <pcl/sample_consensus/sac_model_plane.h>
-//#include <pcl/filters/extract_indices.h>
-//#include <pcl/filters/statistical_outlier_removal.h>
-//#include <pcl/filters/voxel_grid.h>
-//#include <pcl/ros/conversions.h>
 
 // Original
-#include <vis3d/PCLViewer.h>
-#include <vis3d/PCLDrawer.h>
+#include <visualization/pcl_viewer.h>
+#include <visualization/pcl_drawer.h>
 #include <common/container.h>
 #include <common/container_util.h>
 
@@ -44,7 +31,7 @@ void convert_eigen_matrix_to_PointXYZRGB(
 }
 
 namespace simple_sfm {
-namespace vis3d {
+namespace visualization {
 
 struct PCLViewerInternalStorage {
   PCLViewerInternalStorage(const std::string& window_name, 

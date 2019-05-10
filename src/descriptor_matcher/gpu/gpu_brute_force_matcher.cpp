@@ -3,7 +3,7 @@
 #include <opencv2/gpu/gpu.hpp>
 
 // Original
-#include <descriptor_matcher/ConcreteDescriptorMatcher.h>
+#include <descriptor_matcher/concrete_descriptor_matcher.h>
 
 namespace simple_sfm {
 namespace descriptor_matcher {

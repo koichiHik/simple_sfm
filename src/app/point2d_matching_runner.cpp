@@ -3,12 +3,12 @@
 #include <app/point2d_matching_runner.h>
 
 // Original
-#include <feature_extractor/IFeatureExtractor.h>
-#include <feature_extractor/IFeatureExtractorFactory.h>
-#include <feature_extractor/ConcreteFeatureExtractor.h>
-#include <descriptor_matcher/IDescriptorMatcher.h>
-#include <descriptor_matcher/IDescriptorMatcherFactory.h>
-#include <descriptor_matcher/ConcreteDescriptorMatcher.h>
+#include <feature_extractor/i_feature_extractor.h>
+#include <feature_extractor/i_feature_extractor_factory.h>
+#include <feature_extractor/concrete_feature_extractor.h>
+#include <descriptor_matcher/i_descriptor_matcher.h>
+#include <descriptor_matcher/i_descriptor_matcher_factory.h>
+#include <descriptor_matcher/concrete_descriptor_matcher.h>
 
 
 using namespace simple_sfm::feature_extractor;

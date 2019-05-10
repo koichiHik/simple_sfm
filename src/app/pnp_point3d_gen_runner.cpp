@@ -6,7 +6,7 @@
 #include <common/container.h>
 #include <common/container_util.h>
 #include <common/point_cloud_util.h>
-#include <geometry/Geometry.h>
+#include <geometry/geometry.h>
 
 using namespace simple_sfm::common;
 using namespace simple_sfm::geometry;

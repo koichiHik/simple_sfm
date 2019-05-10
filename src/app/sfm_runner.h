@@ -7,7 +7,6 @@
 
 // Original
 #include <app/app_container.h>
-#include <app/app_util.h>
 
 namespace simple_sfm {
 namespace app {
@@ -24,8 +23,6 @@ public:
   bool Run();
 
   bool Terminate();
-
-  SfmDB& GetSfmDB();
 
 private:
   std::unique_ptr<SfMRunnerInternalStorage> m_intl;

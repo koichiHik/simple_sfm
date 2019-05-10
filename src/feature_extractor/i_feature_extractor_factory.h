@@ -6,7 +6,7 @@
 #include <opencv2/core.hpp>
 
 // Original
-#include <feature_extractor/IFeatureExtractor.h>
+#include <feature_extractor/i_feature_extractor.h>
 
 namespace simple_sfm {
 namespace feature_extractor {

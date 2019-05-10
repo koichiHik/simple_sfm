@@ -7,7 +7,6 @@ add_executable(simple_sfm
   pnp_point3d_gen_runner.cpp
   point2d_matching_runner.cpp
   sfm_runner.cpp
-  app_util.cpp
   main.cpp
 )
 
@@ -23,7 +22,7 @@ target_link_libraries(simple_sfm
   descriptor_matcher
   key_point_filter
   geometry
-  vis3d
+  visualization
   common
   ${OpenCV_LIBS}
   ${Boost_LIBRARIES}

@@ -19,7 +19,7 @@
 
 // Original
 #include <common/container.h>
-#include <vis3d/PCLDrawer.h>
+#include <visualization/pcl_drawer.h>
 
 // Constants
 namespace {
@@ -74,15 +74,6 @@ void populate_pcl_point_clouds(
     pclp.x = point_cloud_dists[idx].x;
     pclp.y = point_cloud_dists[idx].y;
     pclp.z = point_cloud_dists[idx].z;
-
-    //pcl::PointXYZRGB pclp(
-    //  point_cloud_dists[idx].x, 
-    //  point_cloud_dists[idx].y, 
-    //  point_cloud_dists[idx].z);
-    // Convert RGB vector to 32bit integer.
-    //uint32_t rgb = ((uint32_t)rgbv[2] << 16 | (uint32_t)rgbv[1] << 8 | (uint32_t)rgbv[0]);
-    //pclp.rgb = *reinterpret_cast<float *>(&rgb);
-
     point_cloud->push_back(pclp);
   }
 }
@@ -146,7 +137,7 @@ void compose_camera_element(
 }
 
 namespace simple_sfm {
-namespace vis3d {
+namespace visualization {
 
 void draw_point_clouds(
   const common::vec1d<cv::Point3d>& point_cloud_dists,

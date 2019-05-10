@@ -2,12 +2,8 @@
 // Self Header
 #include <app/sfm_runner.h>
 
-
-
-
-
 // Original
-#include <vis3d/PCLViewer.h>
+#include <visualization/pcl_viewer.h>
 #include <app/point2d_matching_runner.h>
 #include <app/match_filtering_runner.h>
 #include <app/fmat_point3d_gen_runner.h>
@@ -36,7 +32,7 @@ struct SfMRunnerInternalStorage {
   SfmDB db;
 
   // Viewer
-  vis3d::PCLViewer viewer;
+  visualization::PCLViewer viewer;
 
   // Runner
   Point2DMatchingRunner point2d_matching_runner;
@@ -136,10 +132,6 @@ bool SfMRunner::Terminate() {
 
   m_intl.reset(nullptr);
   return true;
-}
-
-SfmDB& SfMRunner::GetSfmDB() {
-  return m_intl->db;
 }
 
 }
