@@ -6,8 +6,7 @@
 #include <memory>
 
 // OpenCV
-#include <opencv2/gpu/gpu.hpp>
-#include <opencv2/nonfree/gpu.hpp>
+#include <opencv2/xfeatures2d/cuda.hpp>
 
 // Original
 #include <feature_extractor/concrete_feature_extractor.h>
@@ -16,7 +15,7 @@ namespace simple_sfm {
 namespace feature_extractor {
 
 struct GPUSurfFeatureExtractorInternalStorage {
-  cv::gpu::SURF_GPU m_extractor;
+  cv::cuda::SURF_CUDA m_extractor;
 };
 
 GPUSurfFeatureExtractor::GPUSurfFeatureExtractor() :
@@ -33,10 +32,10 @@ void GPUSurfFeatureExtractor::detectAndCompute(
           ) {
 
     std::cout << "Feature Extraction for Single Image" << std::endl;
-    cv::gpu::GpuMat g_img;
-    cv::gpu::GpuMat g_descriptor;
+    cv::cuda::GpuMat g_img;
+    cv::cuda::GpuMat g_descriptor;
     g_img.upload(image);
-    m_intl->m_extractor(g_img, cv::gpu::GpuMat(), key_points, g_descriptor);
+    m_intl->m_extractor(g_img, cv::cuda::GpuMat(), key_points, g_descriptor);
     g_descriptor.download(descriptors);
 
 }
@@ -58,10 +57,10 @@ void GPUSurfFeatureExtractor::detectAndCompute(
   // Feature extraction.
   for (size_t i = 0; i < images.size(); i++) {
     std::cout << "Feature Extraction : " << i << "/" << images.size() << std::endl;
-    cv::gpu::GpuMat g_img;
-    cv::gpu::GpuMat g_descriptor;
+    cv::cuda::GpuMat g_img;
+    cv::cuda::GpuMat g_descriptor;
     g_img.upload(images[i]);
-    m_intl->m_extractor(g_img, cv::gpu::GpuMat(), key_points[i], g_descriptor);
+    m_intl->m_extractor(g_img, cv::cuda::GpuMat(), key_points[i], g_descriptor);
     g_descriptor.download(descriptors[i]);
   }
 }

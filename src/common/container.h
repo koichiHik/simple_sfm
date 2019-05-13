@@ -9,6 +9,7 @@
 #include <opencv2/features2d.hpp> 
 
 // STL
+#include <map>
 #include <vector>
 
 namespace simple_sfm {

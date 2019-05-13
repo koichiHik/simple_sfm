@@ -5,7 +5,7 @@
 // OpenCV
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>
-#include <opencv2/gpu/gpu.hpp>
+#include <opencv2/core/cuda.hpp>
 
 // Original
 #include <common/math.h>
@@ -420,7 +420,7 @@ bool find_camera_matrix_via_pnp(
 
     cv::solvePnPRansac(
       point3d_mat, point2d_mat, cam_intr.K, cam_intr.distortion_coeff,
-      rvec, T, false, 100, 3.0f, int(INLIER_RATIO_FOR_PNP_RANSAC * point2d_list.size()));
+      rvec, T, false, 100, 3.0f);
 
     cv::Rodrigues(rvec, R);
     compose_R_T_to_P(R, T, P);

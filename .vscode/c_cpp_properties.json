@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "../../3rdParty/opencv24137/install/include",
+                "../../3rdParty/opencv331/install/include",
                 "../../3rdParty/eigen334/install/include/eigen3",
                 "/usr/include/boost",
                 "/usr/include/pcl-1.7"

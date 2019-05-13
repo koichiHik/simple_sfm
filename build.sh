@@ -2,8 +2,8 @@
 
 ROOT_3RD=~/workspace/3rdParty
 CMAKE_BUILD_TYPE=Debug
-OpenCV_DIR_RELEASE=${ROOT_3RD}/opencv24137/install/share/
-OpenCV_DIR_DEBUG=${ROOT_3RD}/opencv24137/installd/share/
+OpenCV_DIR_RELEASE=${ROOT_3RD}/opencv331/install/share/
+OpenCV_DIR_DEBUG=${ROOT_3RD}/opencv331/installd/share/
 Eigen3_DIR=${ROOT_3RD}/eigen334/install/share/eigen3/cmake/
 
 if [ CMAKE_BUILD_TYPE="Release" ]; then

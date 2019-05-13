@@ -6,7 +6,7 @@
 #include <memory>
 
 // OpenCV
-#include <opencv2/gpu/gpu.hpp>
+#include <opencv2/core.hpp>
 
 // Original
 #include <descriptor_matcher/i_descriptor_matcher.h>

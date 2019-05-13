@@ -1,6 +1,6 @@
 
 // OpenCV
-#include <opencv2/gpu/gpu.hpp>
+#include <opencv2/cudafeatures2d.hpp>
 
 // Original
 #include <descriptor_matcher/concrete_descriptor_matcher.h>
@@ -9,7 +9,11 @@ namespace simple_sfm {
 namespace descriptor_matcher {
 
 struct GPUBruteForceMatcherInternalStorage {
-cv::gpu::BruteForceMatcher_GPU<cv::L2<float> > m_matcher;
+GPUBruteForceMatcherInternalStorage () :
+  m_matcher(cv::cuda::DescriptorMatcher::createBFMatcher())
+{}
+
+cv::Ptr<cv::cuda::DescriptorMatcher> m_matcher;
 };
 
 GPUBruteForceMatcher::GPUBruteForceMatcher() :
@@ -47,10 +51,10 @@ void GPUBruteForceMatcher::match(
   matches.clear();
   matches.resize(1);
 
-  cv::gpu::GpuMat gpu_query_descriptor, gpu_train_descriptor;
-  cv::gpu::GpuMat pairIdx, distance, all_dist;
+  cv::cuda::GpuMat gpu_query_descriptor, gpu_train_descriptor;
+  cv::cuda::GpuMat pairIdx, distance, all_dist;
 
-  m_intl->m_matcher.match(
+  m_intl->m_matcher->match(
         gpu_query_descriptor,
         gpu_train_descriptor,
         matches[0]);

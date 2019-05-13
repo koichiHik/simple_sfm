@@ -3,7 +3,7 @@
 #include <iostream>
 
 // OpenCV
-#include <opencv2/gpu/gpu.hpp>
+#include <opencv2/cudafeatures2d.hpp>
 
 // Original
 #include <descriptor_matcher/concrete_descriptor_matcher.h>
@@ -15,11 +15,12 @@ static const float DIST_THRESH = 0.7;
 static const int K = 2;
 
 struct GPUBruteForceMatcherWithRatioCheckInternalStorage {
-cv::gpu::BruteForceMatcher_GPU<cv::L2<float> > m_matcher;
-};
+GPUBruteForceMatcherWithRatioCheckInternalStorage() :
+  m_matcher(cv::cuda::DescriptorMatcher::createBFMatcher())
+{}
 
-//const float GPUBruteForceMatcherWithRatioCheckInternalStorage::dist_thresh = 0.7;
-//const int GPUBruteForceMatcherWithRatioCheckInternalStorage::k = 2;
+cv::Ptr<cv::cuda::DescriptorMatcher> m_matcher;
+};
 
 GPUBruteForceMatcherWithRatioCheck::GPUBruteForceMatcherWithRatioCheck() :
   m_intl(new GPUBruteForceMatcherWithRatioCheckInternalStorage())
@@ -68,12 +69,18 @@ void GPUBruteForceMatcherWithRatioCheck::match(
 
   matches.clear();
 
-  cv::gpu::GpuMat gpu_query_descriptor, gpu_train_descriptor;
-  cv::gpu::GpuMat pairIdx, distance, all_dist;
+  cv::cuda::GpuMat gpu_query_descriptor, gpu_train_descriptor;
+  cv::cuda::GpuMat pairIdx, distance, all_dist;
 
   gpu_query_descriptor.upload(query_descriptor);
   gpu_train_descriptor.upload(train_descriptor);
 
+  m_intl->m_matcher->knnMatch(
+        gpu_query_descriptor,
+        gpu_train_descriptor,
+        matches, K);
+
+  /*
   m_intl->m_matcher.knnMatchSingle(
         gpu_query_descriptor, 
         gpu_train_descriptor,
@@ -81,6 +88,7 @@ void GPUBruteForceMatcherWithRatioCheck::match(
   
   m_intl->m_matcher.knnMatchDownload(
         pairIdx, distance, matches);
+  */
 
   // This is necessary to keep same result.
   std::sort(matches.begin(), matches.end());

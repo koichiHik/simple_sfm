@@ -65,8 +65,8 @@ bool PNPPoint3DGenRunner::Run(
       }
 
       if (query_img_idx == -1) {
-        return false;
-        //break;
+        //return false;
+        break;
       }
 
       // Register this img as "Processed"
@@ -76,8 +76,8 @@ bool PNPPoint3DGenRunner::Run(
       bool pose_estimated = find_camera_matrix_via_pnp(
         c_interface.cam_intr, corresp_2d_pnts, corresp_3d_pnts, Pnew);
       if (!pose_estimated) {
-        return false;
-        //continue;
+        //return false;
+        continue;
       }
       interface.pose_recovered_view.insert(query_img_idx);
       interface.sfm_result.AddCamPoses(query_img_idx, Pnew);
