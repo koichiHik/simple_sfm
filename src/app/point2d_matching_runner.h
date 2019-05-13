@@ -25,10 +25,12 @@ struct Point2DMatching : public AlgoIF {
 
   Point2DMatching (SfmDB& db) :
     key_points(db.feature_match.key_points),
+    point2f_lists(db.feature_match.point2f_lists),
     descriptors(db.feature_match.descriptors),
     matrix(db.feature_match.matrix)
   {}
   common::vec2d<cv::KeyPoint>& key_points;
+  common::vec2d<cv::Point2f>& point2f_lists;
   common::vec1d<cv::Mat>& descriptors;
   common::match_matrix& matrix;
 };

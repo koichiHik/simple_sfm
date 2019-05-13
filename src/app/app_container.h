@@ -33,6 +33,7 @@ struct Images {
 
 struct FeatureMatch {
   common::vec2d<cv::KeyPoint> key_points;
+  common::vec2d<cv::Point2f> point2f_lists;
   common::vec1d<cv::Mat> descriptors;
   common::match_matrix matrix;
   common::match_matrix f_ref_matrix;

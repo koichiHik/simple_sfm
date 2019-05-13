@@ -10,13 +10,13 @@ namespace {
 
 using namespace simple_sfm;
 
-template <typename T, typename CopyFunctor>
+template <typename A, typename B, typename CopyFunctor>
 void convert_T_list_aligned_with_matches(
       const common::vec1d<cv::DMatch>& matches,
-      const common::vec1d<cv::KeyPoint>& key_point_list_train,
-      const common::vec1d<cv::KeyPoint>& key_point_list_query,
-      common::vec1d<T>& aligned_T_list_train,
-      common::vec1d<T>& aligned_T_list_query,
+      const common::vec1d<A>& key_point_list_train,
+      const common::vec1d<A>& key_point_list_query,
+      common::vec1d<B>& aligned_T_list_train,
+      common::vec1d<B>& aligned_T_list_query,
       CopyFunctor copyFunc) {
 
   aligned_T_list_train.clear();
@@ -162,8 +162,23 @@ void create_point2f_list_aligned_with_matches(
       common::vec1d<cv::Point2f>& aligned_point2f_list_query) {
 
   auto copyFunctor = [](const cv::KeyPoint& a) -> cv::Point2f {return a.pt;};
-  convert_T_list_aligned_with_matches<cv::Point2f>(
+  convert_T_list_aligned_with_matches<cv::KeyPoint, cv::Point2f>(
     matches, key_point_list_train, key_point_list_query, 
+    aligned_point2f_list_train, aligned_point2f_list_query,
+    copyFunctor);
+
+}
+
+void create_point2f_list_aligned_with_matches(
+      const common::vec1d<cv::DMatch>& matches,
+      const common::vec1d<cv::Point2f>& point2f_list_train,
+      const common::vec1d<cv::Point2f>& point2f_list_query,
+      common::vec1d<cv::Point2f>& aligned_point2f_list_train,
+      common::vec1d<cv::Point2f>& aligned_point2f_list_query) {
+
+  auto copyFunctor = [](const cv::Point2f& a) -> cv::Point2f { return a; };
+  convert_T_list_aligned_with_matches<cv::Point2f, cv::Point2f>(
+    matches, point2f_list_train, point2f_list_query, 
     aligned_point2f_list_train, aligned_point2f_list_query,
     copyFunctor);
 

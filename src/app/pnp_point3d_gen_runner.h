@@ -17,13 +17,13 @@ struct PNPPoint3DGenGenConst : public AlgoIF {
   PNPPoint3DGenGenConst(const SfmDB& db) :
     cam_intr(db.config.cam_intr),
     img_path_list(db.config.img_path_list),
-    key_points(db.feature_match.key_points),
+    point2f_lists(db.feature_match.point2f_lists),
     f_ref_matrix(db.feature_match.f_ref_matrix)
   {}
 
   const common::CamIntrinsics& cam_intr;  
   const common::vec1d<std::string>& img_path_list;
-  const common::vec2d<cv::KeyPoint>& key_points;
+  const common::vec2d<cv::Point2f>& point2f_lists;
   const common::match_matrix& f_ref_matrix;
 };
 

@@ -42,12 +42,8 @@ bool PNPPoint3DGenRunner::Run(
 
     // Accumulation Phase.
   {
-    size_t img_num = c_interface.img_path_list.size();
-    common::vec2d<cv::Point2f> point2d_list(img_num);
-    for (size_t idx = 0; idx < c_interface.img_path_list.size(); idx++) {
-      container_util::convert_key_point_list_to_point2f_list(
-        c_interface.key_points[idx], point2d_list[idx]);
-    }
+
+    size_t img_num = c_interface.img_path_list.size();   
 
     // Triangulation with the all processed views.
     while (interface.processed_view.size() < c_interface.img_path_list.size()) {
@@ -62,15 +58,15 @@ bool PNPPoint3DGenRunner::Run(
           interface.processed_view,
           interface.adopted_view,
           c_interface.f_ref_matrix,
-          point2d_list,
+          c_interface.point2f_lists,
           current_cloud,
-          //interface.point_cloud,
           corresp_2d_pnts,
           corresp_3d_pnts);
       }
 
       if (query_img_idx == -1) {
-        break;
+        return false;
+        //break;
       }
 
       // Register this img as "Processed"
@@ -80,7 +76,8 @@ bool PNPPoint3DGenRunner::Run(
       bool pose_estimated = find_camera_matrix_via_pnp(
         c_interface.cam_intr, corresp_2d_pnts, corresp_3d_pnts, Pnew);
       if (!pose_estimated) {
-        continue;
+        return false;
+        //continue;
       }
       interface.pose_recovered_view.insert(query_img_idx);
       interface.sfm_result.AddCamPoses(query_img_idx, Pnew);
@@ -111,7 +108,7 @@ bool PNPPoint3DGenRunner::Run(
 
         common::container_util::create_point2f_list_aligned_with_matches(
           common::getMapValue(c_interface.f_ref_matrix, key),
-          c_interface.key_points[train_img_idx], c_interface.key_points[query_img_idx],
+          c_interface.point2f_lists[train_img_idx], c_interface.point2f_lists[query_img_idx],
           aligned_point2d_list_train, aligned_point2d_list_query);
 
         common::vec1d<Point3dWithRepError> tmp_point3d_w_reperr;
@@ -160,7 +157,6 @@ bool PNPPoint3DGenRunner::Run(
             if (old_cp_query_idx == new_cp_query_idx) {
               // TODO FIX ME.
               const_cast<common::vec1d<CloudPoint>&>(current_cloud)[old_cp_idx].idx_in_img[query_img_idx] = new_cp_query_idx;
-              //interface.point_cloud[old_cp_idx].idx_in_img[query_img_idx] = new_cp_query_idx;
               continue;
             }
             
@@ -181,17 +177,13 @@ bool PNPPoint3DGenRunner::Run(
         std::cout << std::endl << "Image Pair (" << query_img_idx << ", " << *citr << ")" << std::endl;
         std::cout << "Original : " << current_cloud.size() << ", Added : " << add_to_cloud.size() << std::endl;
         interface.sfm_result.AddPointCloud(add_to_cloud);
-        //interface.point_cloud.reserve(current_cloud.size() + add_to_cloud.size());
-        //interface.point_cloud.insert(interface.point_cloud.end(), add_to_cloud.begin(), add_to_cloud.end());
         add_to_cloud.clear();
         added_point.clear();
       }
 
       interface.adopted_view.insert(query_img_idx);
-
     }
   }
-
 
   return true;
 }

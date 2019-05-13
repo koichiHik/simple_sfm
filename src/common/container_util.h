@@ -52,6 +52,13 @@ void create_point2f_list_aligned_with_matches(
       common::vec1d<cv::Point2f>& aligned_point2f_list_train,
       common::vec1d<cv::Point2f>& aligned_point2f_list_query);
 
+void create_point2f_list_aligned_with_matches(
+      const common::vec1d<cv::DMatch>& matches,
+      const common::vec1d<cv::Point2f>& point2f_list_train,
+      const common::vec1d<cv::Point2f>& point2f_list_query,
+      common::vec1d<cv::Point2f>& aligned_point2f_list_train,
+      common::vec1d<cv::Point2f>& aligned_point2f_list_query);
+
 }
 }
 }

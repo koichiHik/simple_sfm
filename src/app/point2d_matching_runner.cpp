@@ -3,13 +3,13 @@
 #include <app/point2d_matching_runner.h>
 
 // Original
+#include <common/container_util.h>
 #include <feature_extractor/i_feature_extractor.h>
 #include <feature_extractor/i_feature_extractor_factory.h>
 #include <feature_extractor/concrete_feature_extractor.h>
 #include <descriptor_matcher/i_descriptor_matcher.h>
 #include <descriptor_matcher/i_descriptor_matcher_factory.h>
 #include <descriptor_matcher/concrete_descriptor_matcher.h>
-
 
 using namespace simple_sfm::feature_extractor;
 using namespace simple_sfm::descriptor_matcher;
@@ -52,13 +52,13 @@ bool Point2DMatchingRunner::Run(
       c_interface.gray_imgs, interface.key_points, interface.descriptors);
   }
 
-  #if 0
-  // 6. Draw Feature and Display.
   {
-    std::cout << std::endl << "6. Draw Feature and Display." << std::endl;
-    vis2d::draw_key_points(db.images.org_imgs, db.feature_match.key_points, db.images.key_pnt_imgs);
-  }
-  #endif
+    interface.point2f_lists.resize(c_interface.gray_imgs.size());
+    for (size_t idx = 0; idx < c_interface.gray_imgs.size(); idx++) {
+      common::container_util::convert_key_point_list_to_point2f_list(
+        interface.key_points[idx], interface.point2f_lists[idx]);
+    }
+  } 
 
   // 7. Match key points of each image pairs.
   {
