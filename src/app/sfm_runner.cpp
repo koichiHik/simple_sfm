@@ -3,30 +3,30 @@
 #include <app/sfm_runner.h>
 
 // Original
-#include <visualization/pcl_viewer.h>
-#include <app/point2d_matching_runner.h>
-#include <app/match_filtering_runner.h>
 #include <app/fmat_point3d_gen_runner.h>
+#include <app/match_filtering_runner.h>
 #include <app/pnp_point3d_gen_runner.h>
+#include <app/point2d_matching_runner.h>
+#include <fileio/result_writer.h>
 #include <utility/fileutil.h>
+#include <visualization/pcl_viewer.h>
 
 namespace simple_sfm {
 namespace app {
 
 struct SfMRunnerInternalStorage {
-
-  SfMRunnerInternalStorage(const SfmConfig& config) :
-    db(config),
-    viewer("Simple SFM Viewer", db.images.org_imgs, db.feature_match.key_points),
-    point2d_matching_const_if(db),
-    point2d_matching_if(db),
-    match_filtering_const_if(db),
-    match_filtering_if(db),
-    fmat_point3d_gen_const_if(db),
-    fmat_point3d_gen_if(db),
-    pnp_point3d_gen_const_if(db),
-    pnp_point3d_gen_if(db)
-  {}
+  SfMRunnerInternalStorage(const SfmConfig& config)
+      : db(config),
+        viewer("Simple SFM Viewer", db.images.org_imgs,
+               db.feature_match.key_points),
+        point2d_matching_const_if(db),
+        point2d_matching_if(db),
+        match_filtering_const_if(db),
+        match_filtering_if(db),
+        fmat_point3d_gen_const_if(db),
+        fmat_point3d_gen_if(db),
+        pnp_point3d_gen_const_if(db),
+        pnp_point3d_gen_if(db) {}
 
   // DB
   SfmDB db;
@@ -51,20 +51,18 @@ struct SfMRunnerInternalStorage {
   PNPPoint3DGenGen pnp_point3d_gen_if;
 };
 
-SfMRunner::SfMRunner() :
-  m_intl(nullptr)
-{}
+SfMRunner::SfMRunner() : m_intl(nullptr) {}
 
-SfMRunner::~SfMRunner()
-{}
+SfMRunner::~SfMRunner() {}
 
 bool SfMRunner::Initialize(SfmConfig& config) {
   m_intl.reset(new SfMRunnerInternalStorage(config));
 
   m_intl->db.sfm_result.AddListener(&m_intl->viewer);
 
-  utility::file::load_images(
-    m_intl->db.config.img_path_list, m_intl->db.images.org_imgs, m_intl->db.images.gray_imgs);
+  utility::file::load_images(m_intl->db.config.img_path_list,
+                             m_intl->db.images.org_imgs,
+                             m_intl->db.images.gray_imgs);
 
   m_intl->point2d_matching_runner.Initialize();
 
@@ -80,46 +78,50 @@ bool SfMRunner::Initialize(SfmConfig& config) {
 }
 
 bool SfMRunner::Run() {
-
   bool result = false;
 
   result = m_intl->point2d_matching_runner.Run(
-    m_intl->point2d_matching_const_if,
-    m_intl->point2d_matching_if);
+      m_intl->point2d_matching_const_if, m_intl->point2d_matching_if);
 
   if (!result) {
     return false;
   }
 
-  result = m_intl->match_filtering_runner.Run(
-    m_intl->match_filtering_const_if,
-    m_intl->match_filtering_if);
+  result = m_intl->match_filtering_runner.Run(m_intl->match_filtering_const_if,
+                                              m_intl->match_filtering_if);
 
   if (!result) {
     return false;
   }
 
   result = m_intl->fmat_point3d_gen_runner.Run(
-    m_intl->fmat_point3d_gen_const_if,
-    m_intl->fmat_point3d_gen_if);
+      m_intl->fmat_point3d_gen_const_if, m_intl->fmat_point3d_gen_if);
 
   if (!result) {
     return false;
   }
 
-  result = m_intl->pnp_point3d_gen_runner.Run(
-    m_intl->pnp_point3d_gen_const_if,
-    m_intl->pnp_point3d_gen_if);
+  result = m_intl->pnp_point3d_gen_runner.Run(m_intl->pnp_point3d_gen_const_if,
+                                              m_intl->pnp_point3d_gen_if);
 
   if (!result) {
     return false;
   }
+
+  std::cout << "Before fileio::SavePointCloudToPCDFile" << std::endl;
+  fileio::SavePointCloudToPCDFile(
+      "./point_cloud.pcd", m_intl->db.feature_match.key_points,
+      m_intl->db.images.org_imgs, m_intl->db.sfm_result.GetPointCloud());
+
+  std::cout << "Before fileio::SaveCameraPosesToPLYFile" << std::endl;
+  fileio::SaveCameraPosesToPLYFile("./cam_poses.ply",
+                                   m_intl->db.sfm_result.GetCamPoses());
+  std::cout << "After fileio::SaveCameraPosesToPLYFile" << std::endl;
 
   return true;
 }
 
 bool SfMRunner::Terminate() {
-
   m_intl->viewer.wait_vis_thread();
 
   m_intl->pnp_point3d_gen_runner.Terminate();
@@ -134,5 +136,5 @@ bool SfMRunner::Terminate() {
   return true;
 }
 
-}
-}
+}  // namespace app
+}  // namespace simple_sfm

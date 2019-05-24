@@ -24,6 +24,7 @@ target_link_libraries(simple_sfm
   geometry
   visualization
   common
+  fileio
   ${OpenCV_LIBS}
   ${Boost_LIBRARIES}
 )

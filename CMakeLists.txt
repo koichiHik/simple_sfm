@@ -14,9 +14,13 @@ find_package(Boost COMPONENTS filesystem program_options)
 
 # All header file inclusion from top level directory.
 include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 # Include Directories
 add_subdirectory(src/common)
+add_subdirectory(src/fileio)
 add_subdirectory(src/utility)
 add_subdirectory(src/feature_extractor)
 add_subdirectory(src/descriptor_matcher)
